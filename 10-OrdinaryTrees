@@ -1,0 +1,138 @@
+***( Operatii cu arbori oarecare:
+(a)- calculul inaltimii unui arbore oarecare;
+(b)- calculul numarului de noduri ale unui arbore oarecare;
+(c)- calculul informatiei maxime din nodurile unui arbore oarecare;
+(d)- determinarea numarului maxim de fii dintre toate varfurile unui
+arbore oarecare;
+(e)- parcurgerea in adancime a unui arbore oarecare, dar luand subarborii
+fiecarui nod de la dreapta la stanga;
+(f)- parcurgerea unui arbore oarecare pe niveluri de la dreapta la stanga. )
+
+fmod ARBORE is
+
+protecting NAT .
+
+sorts Lista Arbore ListArb .
+subsort Nat < Lista .
+subsort Arbore < ListArb .
+
+op nil : -> Lista .
+op __ : Lista Lista -> Lista [assoc id: nil] .
+
+op null : -> Arbore .
+op _{_} : Nat ListArb -> Arbore [prec 20] .
+
+op frunza : -> ListArb .
+op _;_ : ListArb ListArb -> ListArb [assoc id: frunza prec 30] .
+
+op df : Arbore -> Lista .
+op dflist : ListArb -> Lista .
+
+var X : Nat .
+var L : Lista .
+var A : Arbore .
+var LA LB : ListArb .
+
+eq df(null) = nil .
+eq df(X{LA}) = X dflist(LA) .
+
+eq dflist(frunza) = nil .
+eq dflist(A ; LA) = df(A) dflist(LA) .
+
+op bf : Arbore -> Lista .
+op bflist : ListArb -> Lista .
+
+eq bf(null) = nil .
+eq bf(X{LA}) = X bflist(LA) .
+
+eq bflist(frunza) = nil .
+eq bflist(X{LA} ; LB) = X bflist(LB ; LA) . 
+
+op ex : -> Arbore .
+eq ex = 1{2{3{frunza} ; 4{frunza}} ; 5{6{frunza}} ; 7{frunza}} .
+
+endfm
+
+
+fmod OT is
+
+protecting ARBORE .
+
+var X : Nat .
+var L : Lista .
+var A : Arbore .
+var LA LB : ListArb .
+
+***(e)
+op dfrev : Arbore -> Lista .
+op dfrevlist : ListArb -> Lista .
+
+eq dfrev(null) = nil .
+eq dfrev(X{LA}) = X dfrevlist(LA) .
+
+eq dfrevlist(frunza) = nil .
+eq dfrevlist(LA ; A) = dfrev(A) dfrevlist(LA) .
+
+***(f)
+op bfrev : Arbore -> Lista .
+op bfrevlist : ListArb -> Lista .
+
+eq bfrev(null) = nil .
+eq bfrev(X{LA}) = X bfrevlist(LA) .
+
+eq bfrevlist(frunza) = nil .
+eq bfrevlist(LA ; X{LB}) = X bfrevlist(LB ; LA) .
+
+***(b)
+op nods : Arbore -> Nat .
+op sumnods : ListArb -> Nat . 
+
+eq nods(null) = 0 .
+eq nods(X{LA}) = 1 + sumnods(LA) .
+
+eq sumnods(frunza) = 0 .
+eq sumnods(A ; LA) = nods(A) + sumnods(LA) .
+
+***(c)
+op max : Arbore -> Nat .
+op maxlist : ListArb -> Nat .
+
+eq max(X{frunza}) = X .
+eq max(X{LA}) = if X > maxlist(LA) then X else maxlist(LA) fi .
+
+eq maxlist(frunza) = 0 .
+eq maxlist(A ; LA) = if max(A) > maxlist(LA) then max(A) else maxlist(LA) fi .
+
+***(a)
+op h : Arbore -> Nat .
+op hlist : ListArb -> Nat .
+
+eq h(null) = 0 .
+eq h(X{LA}) = 1 + hlist(LA) .
+
+eq hlist(frunza) = 0 .
+eq hlist(A ; LA) = if h(A) > hlist(LA) then h(A) else hlist(LA) fi .
+
+***(d)
+op child : Arbore -> Nat .
+op childlist : ListArb -> Nat .
+op childlistmax : ListArb -> Nat .
+
+eq child(X{frunza}) = 0 .
+eq child(X{LA}) = if childlist(LA) > childlistmax(LA) then childlist(LA) else childlistmax(LA) fi .
+
+eq childlist(frunza) = 0 .
+eq childlist(A ; LA) = 1 + childlist(LA) .
+
+eq childlistmax(frunza) = 0 .
+eq childlistmax(A ; LA) = if child(A) > childlistmax(LA) then child(A) else childlistmax(LA) fi .
+
+op ex1 : -> Arbore .
+eq ex1 = 1{2{3{frunza} ; 4{12{frunza}}} ; 5{6{frunza}} ; 7{frunza}} .
+
+op ex2 : -> Arbore .
+eq ex2 = 1{2{3{frunza} ; 4{12{frunza} ; 13{frunza} ; 14{frunza} ; 15{frunza}}} ; 5{6{frunza}} ; 7{frunza}} .
+
+
+endfm
+
