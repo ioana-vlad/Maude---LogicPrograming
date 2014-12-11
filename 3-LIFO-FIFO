@@ -1,0 +1,47 @@
+***( LIFO modul pentru stive, cu 
+operatiile pop si push. , FIFO acelasi lucru pentru cozi. )
+
+fmod LIFO is
+
+   protecting NAT .
+
+   sort Stiva .
+   subsort Nat < Stiva .
+
+   op nil : -> Stiva .
+   op __ : Stiva Stiva -> Stiva [assoc id: nil] .
+   op push : Nat Stiva -> Stiva .
+   op pop : Stiva -> Nat .
+   op popstiva : Stiva -> Stiva .
+
+   var X : Nat .
+   var S : Stiva .
+
+   eq push(X,S) = X S .
+   eq pop(X S) = X .
+   eq popstiva(X S) = S .    
+   
+endfm
+
+
+fmod FIFO is
+
+   protecting NAT .
+
+   sort Coada .
+   subsort Nat < Coada .
+
+   op nil : -> Coada .
+   op __ : Coada Coada -> Coada [assoc id: nil] .
+   op push : Nat Coada -> Coada .
+   op pop : Coada -> Nat .
+   op popcoada : Coada -> Coada .
+
+   var X : Nat .
+   var C : Coada .
+
+   eq push(X,C) = C X .
+   eq pop(X C) = X .
+   eq popcoada(X C) = C .    
+   
+endfm
