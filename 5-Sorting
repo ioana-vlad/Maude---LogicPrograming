@@ -1,0 +1,85 @@
+***> selection sort, sortarea prin selectia directa a maximului
+***> quicksort
+
+fmod SELECTSORT is
+
+protecting NAT .
+sorts Lista .
+subsort Nat < Lista .
+
+op nil : -> Lista .
+op __ : Lista Lista -> Lista [assoc id: nil] .
+
+op retmax : Lista -> Nat .
+op removeelem(_,_) : Nat Lista -> Lista .
+op maxsort : Lista -> Lista .
+op push(_,_) : Nat Lista -> Lista .
+
+vars X Y : Nat .
+var L : Lista .
+
+eq push(X,L) = L X .
+
+eq retmax(X) = X .
+eq retmax(X Y) = if X >= Y then X else Y fi .
+eq retmax (X Y L) = if X >= retmax(Y L) then X else retmax(Y L) fi .
+
+eq removeelem(X , nil) = nil .
+eq removeelem(X , X L) = L .
+ceq removeelem(X , Y L) = Y removeelem(X , L) if X =/= Y .
+
+eq maxsort(nil) = nil . 
+eq maxsort(X) = X .
+eq maxsort(L) = push(retmax(L),maxsort(removeelem(retmax(L), L))) .
+
+endfm
+
+fmod QUICKSORT is
+
+***> sortarea rapida
+***( OBSERVATIE: calculele de complexitate pentru algoritmi
+din programarea imperativa nu sunt valabile aici. ) 
+
+   protecting NAT .
+
+   sorts Lista PerecheListe .
+
+   subsort Nat < Lista .
+
+   op nil : -> Lista .
+   op __ : Lista Lista -> Lista [assoc id: nil prec 20] .
+
+   op {_;_} : Lista Lista -> PerecheListe [prec 30] .
+***> operatia care construieste sortul PerecheListe 
+
+   op concat : PerecheListe PerecheListe -> PerecheListe .
+***> concatenarea pe componente
+
+   op per-lista : PerecheListe -> Lista .
+
+   op taie : Nat Lista -> PerecheListe .
+
+   op qsort : Lista -> Lista .
+   op qsortper : PerecheListe -> PerecheListe .
+
+   vars X Y : Nat .
+   vars L L1 T T1 : Lista .
+
+   eq concat({ L ; L1 },{ T ; T1 }) = { L T ; L1 T1 } .
+
+***> in cele ce urmeaza, X va fi pivotul
+
+   eq taie(X,nil) = { nil ; nil } .
+   ceq taie(X,Y L) = concat({ Y ; nil },taie(X,L)) if Y <= X .
+   ceq taie(X,Y L) = concat({ nil ; Y },taie(X,L)) if Y > X .
+
+   eq per-lista({ L ; L1 }) = L L1 .
+
+   eq qsort(nil) = nil .
+   eq qsort(X L) = per-lista(concat(qsortper(taie(X,L)),{ X ; nil })) .
+***( este esential sa nu includem pivotul in lista care trebuie taiata,
+pentru ca avem nevoie sa micsoram lungimea listei )
+
+   eq qsortper({ L ; L1 }) = { qsort(L) ; qsort(L1) } .
+
+endfm
