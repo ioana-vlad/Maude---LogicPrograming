@@ -1,0 +1,86 @@
+fmod POLIN is
+
+***( Modul pentru polinoame cu coeficienti reali, importand
+modulul FLOAT predefinit, care contine operatii pentru adunarea,
+scaderea, inmultirea a doua polinoame, si pentru catul si restul
+impartirii a doua polinoame cu coeficienti reali. )
+
+protecting FLOAT .
+
+sorts Polinom Term .
+subsorts Float < Term < Polinom .
+
+***(op nil : -> Term .)
+
+op (_;_) : Float Float -> Term .
+op nilP : -> Polinom .
+op __ : Polinom Polinom -> Polinom [assoc id: nilP] .
+
+vars X Y : Float .
+vars T1 T2 : Term .
+vars P1 P2 P3 : Polinom .
+
+op coef : Term -> Float .
+op difint : Float Float -> Float .
+eq difint (X , Y) = X + Y .
+
+op expo : Term -> Float .
+
+eq coef ( X ; Y ) = X .
+eq expo ( X ; Y ) = Y .
+
+op sum : Polinom Polinom -> Polinom .
+op dif : Polinom Polinom -> Polinom .
+op chcoef : Polinom -> Polinom .
+
+***(op nozero : Polinom -> Polinom .)
+
+eq sum (nilP , nilP) = nilP .
+eq sum (nilP , P2) = P2 .
+eq sum (P1 , nilP) = P1 .
+ceq sum (T1 P1 , T2 P2) = (((coef (T1) + coef (T2)) ; expo (T1)) sum (P1 , P2)) if (expo (T1) == expo (T2)) .
+ceq sum (T1 P1 , T2 P2) = (T2 sum (T1 P1 , P2)) if (expo (T1) < expo (T2)) .
+eq sum (T1 P1 , T2 P2) = (T1 sum (P1 , T2 P2)) [owise] .
+
+eq chcoef (nilP) = nilP .
+eq chcoef (T1 P1) = ((coef (T1) * (-1.0)) ; expo (T1)) chcoef (P1) .
+
+eq dif (nilP , nilP) = nilP .
+eq dif (nilP , P2) = chcoef (P2) .
+eq dif (P1 , nilP) = P1 .
+ceq dif (T1 P1 , T2 P2) = (((coef (T1) + (coef (T2) * (-1.0))) ; expo (T1)) dif (P1 , P2)) if (expo (T1) == expo (T2)) .
+ceq dif (T1 P1 , T2 P2) = (chcoef (T2) dif (T1 P1 , P2)) if (expo (T1) < expo (T2)) .
+eq dif (T1 P1 , T2 P2) = (T1 dif (P1 , T2 P2)) [owise] .
+
+op multip : Polinom Polinom -> Polinom .
+op multipterm : Term Polinom -> Polinom .
+
+eq multipterm (T1 , nilP) = nilP .
+eq multipterm (T1 , T2 P2) = (coef (T1) * coef (T2) ; expo (T1) + expo (T2)) multipterm (T1 , P2) .
+
+eq multip (nilP , P2) = nilP .
+eq multip (T1 P1 , P2) = sum (multipterm (T1 , P2) , multip (P1 , P2)) .
+
+op elimnul : Polinom -> Polinom .
+
+eq elimnul(nilP) = nilP .
+ceq elimnul(T1 P1) = elimnul(P1) if coef(T1) == 0.0 .
+ceq elimnul(T1 P1) = T1 elimnul(P1) if coef(T1) =/= 0.0 .
+
+op aux : Term Term -> Term .
+eq aux(T1 , T2) = ((coef(T1) / coef(T2)) ; (expo(T1) + (expo(T2) * (-1.0)))) .
+
+op aux2 : Polinom Polinom -> Polinom .
+eq aux2 (T1 P1 , T2 P2) = elimnul(dif(T1 P1 , multip(T2 P2 , aux(T1 , T2)))) .
+
+op proc : Polinom Polinom Polinom -> Polinom .
+op divrest : Polinom Polinom -> Polinom .
+op div : Polinom Polinom -> Polinom .
+
+eq proc (T1 P1 , T2 P2 , P3) = if (expo(T1) >= expo(T2)) then proc(aux2 (T1 P1 , T2 P2) , T2 P2 , P3 aux(T1 , T2)) else P3 fi .
+eq divrest (P1 , P2) = elimnul(dif(P1 , multip(P2 , proc (P1 , P2 , nilP)))) .
+eq div (P1 , P2) = proc (P1 , P2 , nilP) .
+
+endfm
+
+red aux2 ((3.0 ; 6.0) (5.0 ; 2.0) (3.0 ; 0.0) , (1.0 ; 3.0) (2.0 ; 0.0)) .
