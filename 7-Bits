@@ -1,0 +1,61 @@
+***( Operatii cu siruri de biti: and, or, xor pe biti,
+si adunarea in binar, efectuata direct pe sirurile de biti. )
+
+fmod BIT is
+
+protecting NAT .
+sort Binar .
+subsort Nat < Binar .
+
+op nilB : -> Binar .
+op __ : Binar Binar -> Binar [assoc id: nilB] .
+
+op _V_ : Binar Binar -> Binar .
+***(or)
+op _A_ : Binar Binar -> Binar .
+***(and)
+op _W_ : Binar Binar -> Binar .
+***(xor)
+
+op _a_ : Nat Nat -> Nat .
+op _v_ : Nat Nat -> Nat .
+op _w_ : Nat Nat -> Nat .
+
+vars X Y : Nat .
+vars N P : Binar .
+
+eq (X a Y) = if (X == 1) then Y else 0 fi .
+eq (X v Y) = if (X == 1) then 1 else Y fi .
+eq (X W Y) = if (X == Y) then 0 else 1 fi .
+
+
+eq (nilB) V (nilB) = nilB .
+eq (nilB) V (P) = P .
+eq (N) V (nilB) = N .
+eq (N X) V (P Y) = (N V P) (X v Y) .
+
+eq (nilB) A (nilB) = nilB .
+eq (nilB) A (P) = nilB .
+eq (N) A (nilB) = nilB .
+eq (N X) A (P Y) = (N A P) (X a Y) .
+
+eq (nilB) W (nilB) = nilB .
+eq (nilB) W (P) = P .
+eq (N) W (nilB) = N .
+eq (N X) W (P Y) = (N W P) (X w Y) .
+
+op sum : Binar Binar -> Binar .
+op transp : Binar Binar -> Binar .
+
+
+eq sum (nilB , nilB) = nilB .
+eq sum (nilB , P) = P .
+eq sum (N , nilB) = N .
+eq sum (N X , P Y) = sum (N , P) (X W Y) .
+
+eq transp (nilB , nilB) = nilB .
+eq  (nilB , P) = P .
+eq sum (N , nilB) = N .
+eq sum (N X , P Y) = sum (N , P) (X W Y) .
+
+endfm
