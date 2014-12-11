@@ -1,0 +1,53 @@
+***> generarea tuturor permutarilor unei liste cu sau fara duplicate
+***> (nu numai a celor circulare)
+
+fmod PERM is
+
+protecting NAT .
+sorts List ListList .
+subsort Nat < List < ListList .
+
+op nil : -> List .
+op nilL : -> ListList .
+op __ : List List -> List [assoc id: nil] .
+
+vars L L1 : List . 
+
+op _;_ : ListList ListList -> ListList [assoc id: nilL] .
+eq nil ; L = L .
+eq L ; nil = L .
+
+***( operatii pentru construirea listelor necesare. 
+Count = lista cu nr aparitiilor fiecarui elem
+Elem = lista cu elemente)
+
+vars Count Elem Gen LEBeg LEEnd LCBeg LCEnd : List .
+vars X XEBeg XEEnd XCBeg XCEnd : Nat .
+
+op f : List List List List List -> ListList . 
+eq f(nil, nil, nil, nil, Gen) = Gen .
+eq f(LEBeg, (XEEnd LEEnd), LCBeg, (s(XCEnd) LCEnd), Gen) = if (XCEnd == 0) then (f(nil, (LEBeg LEEnd), nil, (LCBeg LCEnd), (Gen XEEnd)) ; f((LEBeg XEEnd), LEEnd, (LCBeg s(XCEnd)), LCEnd, Gen)) else (f(nil, (LEBeg XEEnd LEEnd), nil, (LCBeg XCEnd LCEnd), (Gen XEEnd)) ; f((LEBeg XEEnd), LEEnd, (LCBeg s(XCEnd)), LCEnd, Gen)) fi .
+eq f(LEBeg, nil, LCBeg, nil, Gen) = nil .
+
+
+op buildElemLists : List List List List List -> ListList .
+eq buildElemLists( nil, LEBeg, LEEnd, LCBeg, LCEnd) = (LEBeg LEEnd) ; (LCBeg LCEnd) .
+eq buildElemLists( X, LEBeg, nil, LCBeg, nil) = (LEBeg X) ; (LCBeg 1) .
+eq buildElemLists( X, LEBeg, (XEEnd LEEnd), LCBeg, (XCEnd LCEnd)) = if (X == XEEnd) then buildElemLists(nil, nil, (LEBeg XEEnd LEEnd), nil, LCBeg (XCEnd + 1) LCEnd) else buildElemLists(X, LEBeg XEEnd, LEEnd, LCBeg XCEnd, LCEnd) fi .
+
+eq buildElemLists( X L, LEBeg, nil, LCBeg, nil) = buildElemLists( L, nil, LEBeg X, nil, LCBeg 1 ) .
+eq buildElemLists( X L, LEBeg, (XEEnd LEEnd), LCBeg, (XCEnd LCEnd)) = if (X == XEEnd) then buildElemLists(L, nil, (LEBeg XEEnd LEEnd), nil, LCBeg (XCEnd + 1) LCEnd) else buildElemLists(X L, LEBeg XEEnd, LEEnd, LCBeg XCEnd, LCEnd) fi .
+
+op build : List -> ListList .
+eq build (L) = buildElemLists(L, nil, nil, nil, nil) .
+
+op pop1 : ListList -> List .
+op pop2 : ListList -> List .
+eq pop1(L ; LEBeg) = L .
+eq pop2(L ; LEBeg) = LEBeg .
+
+
+op perm : List -> ListList .
+eq perm(L) = f(nil, pop1(build(L)), nil, pop2(build(L)), nil) .
+
+endfm
