@@ -1,0 +1,109 @@
+***( INTEGERS specificatie pentru
+numerele intregi, cu operatiile: 0, s (succesor),
+p (predecesor), +, - unar si binar, *. Contine si 
+operatiile abs (modulul), div (catul 
+impartirii intregi), mod (restul impartirii intregi)
+si cmmdc (cel mai mare divizor comun), precum si
+relatiile <, <=, >, >=.)
+
+fmod INTEGERS is
+
+   sorts Zero NzNat Nat Neg NzInt Int .
+   subsort Zero < Nat .
+   subsorts NzNat < Nat NzInt < Int .
+   subsort Neg < NzInt .
+
+   op 0 : -> Zero .
+
+   ops s_ p_ : Int -> Int .
+   op s_ : Nat -> NzNat .
+   op p_ : NzNat -> Nat .
+   op p_ : Zero -> Neg .
+   op p_ : Neg -> Neg .
+  
+   ops (_+_) (_*_) (_-_) : Int Int -> Int . 
+   ops (_+_) (_*_) : Nat Nat -> Nat .
+   op _+_ : NzNat Nat -> NzNat .
+   op _+_ : Nat NzNat -> NzNat .
+   op _*_ : NzInt NzInt -> NzInt .
+   op _*_ : NzNat NzNat -> NzNat .
+   op _*_ : Zero Int -> Zero .
+   op _*_ : Int Zero -> Zero .
+
+   op -_ : Int -> Int .
+   op -_ : NzNat -> Neg .
+   op -_ : Neg -> NzNat .
+
+   op abs : Int -> Nat .
+   op abs : NzInt -> NzNat .
+
+   ops (_<=_) (_<_) (_>=_) (_>_) : Int Int -> Bool .
+   
+   op _div_ : Nat NzNat -> Nat .
+   op _div_ : Int NzInt -> Int .
+   op _mod_ : Int NzInt -> Nat .
+   
+   op cmmdc : Int Int -> Nat .
+
+   vars X Y : Int .
+   vars M M1 : Nat .
+   var N : Neg .
+   var P : NzNat .
+
+   eq p s X = X .
+   eq s p X = X .
+
+   eq X + 0 = X .
+   eq X + s Y = s (X + Y) .
+   eq X + p Y = p (X + Y) .
+
+   eq - 0 = 0 .
+   eq - - X = X .
+   eq - s X = p (- X) .
+   eq - p X = s (- X) .
+
+   eq X - 0 = X .
+   eq X - s Y = p (X - Y) .
+   eq X - p Y = s (X - Y) .
+
+   eq X * 0 = 0 .
+   eq X * s Y = (X * Y) + X .
+   eq X * p Y = (X * Y) - X .
+
+   eq abs(M) = M .
+   eq abs(N) = - N .
+
+   eq 0 <= M = true .
+   eq P <= 0 = false .
+   eq - M <= - M1 = M1 <= M .
+   eq N <= M = true .
+   eq M <= N = false .
+   eq s X <= s Y = X <= Y .
+   eq p X <= p Y = X <= Y .
+
+   eq X < Y = X <= Y and X =/= Y .
+
+   eq X >= Y = Y <= X .
+
+   eq X > Y = Y < X .   
+
+   ceq M div P = 0 if M < P .
+   ceq M div P = s((M - P) div P) if P <= M .
+
+   ceq M mod P = M if M < P .
+   ceq M mod P = (M - P) mod P if P <= M .
+
+   eq cmmdc(0,M) = M .
+   eq cmmdc(P,M) = cmmdc(M mod P,P) .
+
+   ceq cmmdc(X,Y) = cmmdc(abs(X),abs(Y)) if X < 0 or Y < 0 .
+
+   eq X mod N = X mod (- N) .
+   ceq N mod P = 0 if (- N) mod P == 0 .
+   ceq N mod P = P - ((- N) mod P) if (- N) mod P =/= 0 .
+
+   eq X div N = - (X div (- N)) .
+   ceq N div P = - ((- N) div P) if (- N) mod P == 0 .
+   ceq N div P = p (- ((- N) div P)) if (- N) mod P =/= 0 .
+
+endfm
