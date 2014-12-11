@@ -1,0 +1,35 @@
+***(input : red initial (op1) (op2)...(opN) . 
+input ex: red calculeaza (1.2 (M + 2) (M / 5) (M * 3.5) (M - 20)) .
+ 
+output: lista rezulatelor intermediare si rezultatul final)
+
+
+fmod CALCULATOR is
+
+protecting FLOAT .
+protecting STRING .
+
+sort List .
+subsorts Float < List .
+
+vars X Y : Float .
+var L : List .
+vars M : Char .
+
+op nil : -> List .
+op __ : List List -> List [assoc id: nil] .
+
+op _+_ : Char Float -> Float .
+op _*_ : Char Float -> Float .
+op _/_ : Char Float -> Float .
+op _-_ : Char Float -> Float .
+
+op calc : List -> List .
+
+eq calc (X nil) = nil .
+eq calc (X (M + Y) L) = (X + Y) calc ((X + Y) L ) .
+eq calc (X (M * Y) L) = (X * Y) calc ((X * Y) L ) .
+eq calc (X (M / Y) L) = (X / Y) calc ((X / Y) L ) .
+eq calc (X (M - Y) L) = (X + (Y * (-1.0))) calc ((X + (Y * (-1.0))) L ) .
+
+endfm
