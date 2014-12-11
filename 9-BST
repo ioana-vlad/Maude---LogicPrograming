@@ -1,0 +1,264 @@
+***( Operatii cu arbori binari de cautare:
+(A)- o operatie care sa determine daca un arbore binar cu informatiile
+din noduri numere naturale este arbore binar de cautare;
+(B)- o operatie care sa determine daca un numar natural se afla printre
+valorile din nodurile unui arbore binar de cautare, fara a calcula
+lista valorilor din nodurile arborelui respectiv;
+(C)- sortarea descrescatoare a unei liste de numere naturale, folosind
+un arbore binar de cautare creat cu operatiile insert si insertlist
+din modulul ARBBINCAUT de mai sus (exact cu definitiile de acolo);
+(D)- sa se sorteze crescator cu arbori binari de cautare liste de:
+	(1) numere intregi, folosind modulul predefinit INT;
+	(2) numere rationale, folosind modulul predefinit RAT;
+	(3) numere rationale, folosind modulul predefinit FLOAT;
+	(4) caractere, folosing modulul predefinit STRING;
+	(5) siruri de caractere, folosing modulul predefinit STRING. )
+------------------------------------------------------------------------------------------
+
+fmod BST is
+
+protecting NAT .
+
+sorts List Tree .
+subsorts Nat < List .
+
+op nil : -> List .
+op __ : List List -> List [assoc id: nil] .
+
+op null : -> Tree .
+op _{_,_} : Nat Tree Tree -> Tree .
+
+var X Y : Nat .
+var L : List .
+vars A B : Tree .
+
+op insert : Nat Tree -> Tree .
+op insertlist : List Tree -> Tree .
+
+eq insert(Y,null) = Y{null,null} .
+eq insert(Y,X{A,B}) = if Y <= X then X{insert(Y,A),B} else X{A,insert(Y,B)} fi .
+
+eq insertlist(nil,A) = A .
+eq insertlist(X L,A) = insert(X,insertlist(L,A)) . 
+
+op ino : Tree -> List .
+eq ino(null) = nil .
+eq ino(X{A,B}) = ino(A) X ino(B) .
+
+op issort : List -> Nat .
+eq issort(X) = 1 .
+eq issort(X Y L) = if X > Y then 0 else issort(Y L) fi .
+
+op istree : Tree -> Nat .
+***(A 0 = false, 1= true)
+eq istree(null) = 0 .
+eq istree(A) = issort(ino(A)) .
+
+op src : Nat Tree -> Nat .
+***(B 0 = false, 1= true)
+eq src(Y,null) = 0 .
+ceq src(Y,X{A,B}) = 1 if Y == X .
+ceq src(Y,X{A,B}) = src(Y,A) if Y < X .
+ceq src(Y,X{A,B}) = src(Y,B) if Y > X .
+
+op drs : Tree -> List .
+eq drs(null) = nil .
+eq drs(X{A,B}) = drs(B) X drs(A) .
+
+op sortdes : List -> List .
+***(C)
+eq sortdes(L) = drs(insertlist(L,null)) .
+
+ops ex1 ex2 : -> Tree .
+
+eq ex1 = 5{2{1{null,null},4{3{null,null},null}},6{null,9{8{null,null},11{10{null,null},null}}}} .
+eq ex2 = 1{2{4{null,null},5{6{null,null},null}},3{null,7{8{null,null},9{10{null,null},null}}}} .
+
+endfm
+
+---------------------------------------------------------------------------------------------------
+
+fmod BSTD1 is
+
+protecting RAT .
+
+sorts List Tree .
+subsorts Rat < List .
+
+op nil : -> List .
+op __ : List List -> List [assoc id: nil] .
+
+op null : -> Tree .
+op _{_,_} : Int Tree Tree -> Tree .
+
+var X Y : Rat .
+var L : List .
+vars A B : Tree .
+
+op insert : Rat Tree -> Tree .
+op insertlist : List Tree -> Tree .
+
+eq insert(Y,null) = Y{null,null} .
+eq insert(Y,X{A,B}) = if Y <= X then X{insert(Y,A),B} else X{A,insert(Y,B)} fi .
+
+eq insertlist(nil,A) = A .
+eq insertlist(X L,A) = insert(X,insertlist(L,A)) . 
+
+op ino : Tree -> List .
+eq ino(null) = nil .
+eq ino(X{A,B}) = ino(A) X ino(B) .
+
+op srt : List -> List .
+eq srt(L) = ino(insertlist(L,null)) .
+
+endfm
+
+---------------------------------------------------------------------------------
+
+fmod BSTD2 is
+
+protecting FLOAT .
+
+sorts List Tree .
+subsorts Float < List .
+
+op nil : -> List .
+op __ : List List -> List [assoc id: nil] .
+
+op null : -> Tree .
+op _{_,_} : Float Tree Tree -> Tree .
+
+var X Y : Float .
+var L : List .
+vars A B : Tree .
+
+op insert : Float Tree -> Tree .
+op insertlist : List Tree -> Tree .
+
+eq insert(Y,null) = Y{null,null} .
+eq insert(Y,X{A,B}) = if Y <= X then X{insert(Y,A),B} else X{A,insert(Y,B)} fi .
+
+eq insertlist(nil,A) = A .
+eq insertlist(X L,A) = insert(X,insertlist(L,A)) . 
+
+op ino : Tree -> List .
+eq ino(null) = nil .
+eq ino(X{A,B}) = ino(A) X ino(B) .
+
+op srt : List -> List .
+eq srt(L) = ino(insertlist(L,null)) .
+
+endfm
+
+---------------------------------------------------------------------------------------------
+
+fmod BSTD3 is
+
+protecting FLOAT .
+
+sorts List Tree .
+subsorts Float < List .
+
+op nil : -> List .
+op __ : List List -> List [assoc id: nil] .
+
+op null : -> Tree .
+op _{_,_} : Float Tree Tree -> Tree .
+
+var X Y : Float .
+var L : List .
+vars A B : Tree .
+
+op insert : Float Tree -> Tree .
+op insertlist : List Tree -> Tree .
+
+eq insert(Y,null) = Y{null,null} .
+eq insert(Y,X{A,B}) = if Y <= X then X{insert(Y,A),B} else X{A,insert(Y,B)} fi .
+
+eq insertlist(nil,A) = A .
+eq insertlist(X L,A) = insert(X,insertlist(L,A)) . 
+
+op ino : Tree -> List .
+eq ino(null) = nil .
+eq ino(X{A,B}) = ino(A) X ino(B) .
+
+op srt : List -> List .
+eq srt(L) = ino(insertlist(L,null)) .
+
+endfm
+
+------------------------------------------------------------------------------------
+
+fmod BSTD4 is
+
+protecting STRING .
+
+sorts List Tree .
+subsorts Char < List .
+
+op nil : -> List .
+op __ : List List -> List [assoc id: nil] .
+
+op null : -> Tree .
+op _{_,_} : Char Tree Tree -> Tree .
+
+var X Y : Char .
+var L : List .
+vars A B : Tree .
+
+op insert : Char Tree -> Tree .
+op insertlist : List Tree -> Tree .
+
+eq insert(Y,null) = Y{null,null} .
+eq insert(Y,X{A,B}) = if Y <= X then X{insert(Y,A),B} else X{A,insert(Y,B)} fi .
+
+eq insertlist(nil,A) = A .
+eq insertlist(X L,A) = insert(X,insertlist(L,A)) . 
+
+op ino : Tree -> List .
+eq ino(null) = nil .
+eq ino(X{A,B}) = ino(A) X ino(B) .
+
+op srt : List -> List .
+eq srt(L) = ino(insertlist(L,null)) .
+
+endfm
+
+-------------------------------------------------------------------------------
+
+fmod BSTD5 is
+
+protecting STRING .
+
+sorts List Tree .
+subsorts String < List .
+
+op nil : -> List .
+op __ : List List -> List [assoc id: nil] .
+
+op null : -> Tree .
+op _{_,_} : String Tree Tree -> Tree .
+
+var X Y : String .
+var L : List .
+vars A B : Tree .
+
+op insert : String Tree -> Tree .
+op insertlist : List Tree -> Tree .
+
+eq insert(Y,null) = Y{null,null} .
+eq insert(Y,X{A,B}) = if Y <= X then X{insert(Y,A),B} else X{A,insert(Y,B)} fi .
+
+eq insertlist(nil,A) = A .
+eq insertlist(X L,A) = insert(X,insertlist(L,A)) . 
+
+op ino : Tree -> List .
+eq ino(null) = nil .
+eq ino(X{A,B}) = ino(A) X ino(B) .
+
+op srt : List -> List .
+eq srt(L) = ino(insertlist(L,null)) .
+
+endfm
+
+
