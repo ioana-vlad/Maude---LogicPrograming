@@ -1,0 +1,151 @@
+***(RATIONAL modul pentru definirea numerelor rationale, care
+foloseste modulul pentru numere intregi din INTEGERS, sicontine
+operatiile: +, - unar si binar, *, / si relatiile <=, <, >=
+si > implementate ca operatii de sort rezultat Bool.
+Operatia / serveste la construirea sortului numerelor rationale. )
+
+fmod RATIONAL is
+
+   sorts Zero NzNat Nat Neg NzInt Int NzRat Rat .
+   subsort Zero < Nat .
+   subsorts NzNat < Nat NzInt < Int < Rat .
+   subsorts Neg < NzInt < NzRat .
+
+   op 0 : -> Zero .
+
+   ops s_ p_ : Int -> Int .
+   op s_ : Nat -> NzNat .
+   op p_ : NzNat -> Nat .
+   op p_ : Zero -> Neg .
+   op p_ : Neg -> Neg .
+  
+   ops (_+_) (_*_) (_-_) : Int Int -> Int . 
+   ops (_+_) (_*_) : Nat Nat -> Nat .
+   op _+_ : NzNat Nat -> NzNat .
+   op _+_ : Nat NzNat -> NzNat .
+   op _*_ : NzInt NzInt -> NzInt .
+   op _*_ : NzNat NzNat -> NzNat .
+   op _*_ : Zero Int -> Zero .
+   op _*_ : Int Zero -> Zero .
+
+   op -_ : Int -> Int .
+   op -_ : NzNat -> Neg .
+   op -_ : Neg -> NzNat .
+
+   op _/_ : Int NzInt -> Rat .
+   op _/_ : NzInt NzInt -> NzRat .
+   op _/_ : Rat NzRat -> Rat .
+   op _/_ : NzRat NzRat -> NzRat .
+
+   ops (_+_) (_*_) (_-_) : Rat Rat -> Rat . 
+   op _*_ : NzRat NzRat -> NzRat . 
+
+   op -_ : Rat -> Rat .
+   op -_ : NzRat -> NzRat .
+   
+   op abs : Int -> Nat .
+   op abs : NzInt -> NzNat .
+
+   ops (_<=_) (_<_) (_>=_) (_>_) : Rat Rat -> Bool .
+   
+   op _div_ : Nat NzNat -> Nat .
+   op _div_ : Int NzInt -> Int .
+   op _mod_ : Int NzInt -> Nat .
+   
+   op cmmdc : Int Int -> Nat .
+
+   vars X Y : Int .
+   vars Z T U : NzInt .
+   vars M M1 : Nat .
+   vars N N1 : Neg .
+   vars P S : NzNat .
+   vars Q R : Rat . 
+
+   eq p s X = X .
+   eq s p X = X .
+
+   eq X + 0 = X .
+   eq X + s Y = s (X + Y) .
+   eq X + p Y = p (X + Y) .
+
+   eq - 0 = 0 .
+   eq - - X = X .
+   eq - s X = p (- X) .
+   eq - p X = s (- X) .
+
+   eq X - 0 = X .
+   eq X - s Y = p (X - Y) .
+   eq X - p Y = s (X - Y) .
+
+   eq X * 0 = 0 .
+   eq X * s Y = (X * Y) + X .
+   eq X * p Y = (X * Y) - X .
+
+   eq abs(M) = M .
+   eq abs(N) = - N .
+
+   eq 0 <= M = true .
+   eq P <= 0 = false .
+   eq - M <= - M1 = M1 <= M .
+   eq N <= M = true .
+   eq M <= N = false .
+   eq s X <= s Y = X <= Y .
+   eq p X <= p Y = X <= Y .
+
+   eq Q < R = Q <= R and Q =/= R .
+
+   eq Q >= R = R <= Q .
+
+   eq Q > R = R < Q .   
+
+   ceq M div P = 0 if M < P .
+   ceq M div P = s((M - P) div P) if P <= M .
+
+   ceq M mod P = M if M < P .
+   ceq M mod P = (M - P) mod P if P <= M .
+
+   eq cmmdc(0,M) = M .
+   eq cmmdc(P,M) = cmmdc(M mod P,P) .
+
+   ceq cmmdc(X,Y) = cmmdc(abs(X),abs(Y)) if X < 0 or Y < 0 .
+
+   eq X mod N = X mod (- N) .
+   ceq N mod P = 0 if (- N) mod P == 0 .
+   ceq N mod P = P - ((- N) mod P) if (- N) mod P =/= 0 .
+
+   eq X div N = - (X div (- N)) .
+   ceq N div P = - ((- N) div P) if (- N) mod P == 0 .
+   ceq N div P = p (- ((- N) div P)) if (- N) mod P =/= 0 .
+ 
+   eq X / (s 0) = X .
+   ceq X / Z = (X div cmmdc(X,Z)) / (Z div cmmdc(X,Z)) if cmmdc(X,Z) =/= s 0 .
+
+   eq (X / Z) / (T / U) = (X * U) / (Z * T) .
+   eq X / (T / U) = (X * U) / T .
+   eq (X / Z) / T = X / (Z * T) .
+
+   eq (X / Z) * (Y / T) = (X * Y) / (Z * T) .
+   eq X * (Y / T) = (X * Y) / T .
+   eq (X / Z) * Y = (X * Y) / Z .
+
+   eq (X / Z) + (Y / T) = ((X * T) + (Y * Z)) / (Z * T) .
+   eq X + (Y / T) = ((X * T) + Y) / T .
+   eq (X / Z) + Y = (X + (Y * Z)) / Z .
+
+   eq (X / Z) - (Y / T) = ((X * T) - (Y * Z)) / (Z * T) .
+   eq X - (Y / T) = ((X * T) - Y) / T .
+   eq (X / Z) - Y = (X - (Y * Z)) / Z .
+
+   eq - (X / Z) = (- X) / Z .
+
+   eq X / P <= Y / S = X * S <= Y * P .
+   eq X / N <= Y / N1 = Y / (- N1) <= X / (- N) .
+   eq X / N <= Y / S = (- X) / (- N) <= Y / S .
+   eq X / P <= Y / N1 = X / P <= (- Y) / (- N1) .
+
+   eq X <= Y / S = X * S <= Y .
+   eq X <= Y / N1 = X <= (- Y) / (- N1) . 
+
+   eq X / Z <= Y = (- Y) <= (- X) / Z .
+
+endfm
