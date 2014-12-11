@@ -1,0 +1,106 @@
+***( Un multiset poate fi scris ca o multime in care permitem ca 
+un element sa apara de mai multe ori
+(ordinea elementelor nu are importanta), sau ca o lista de perechi,
+cu prima componenta dintr-o pereche reprezentand elementul, iar a
+doua componenta a perechii reprezentand numarul de aparitii ale
+elementului in multiset. De exemplu: M = {1, 2, 1, 5, 3, 4, 5, 4, 1,
+3, 5, 0} = {(1,3), (2,1), (3,2), (4,2), (5,3), (0,1)}.
+   MULTI modul pentru multiseturi cu elemente din multimea
+numerelor naturale, care contine doua operatii pentru trecerea
+dintr-o reprezentare in cealalta, si alte doua
+operatii, pentru definirea reuniunii si, respectiv, a intersectiei
+a doua multiseturi in reprezentarea cu perechi.)
+
+fmod MULTI is
+
+protecting NAT .
+
+sorts Group Multi Pair .
+subsorts Nat < Group .
+subsorts Nat < Pair < Multi .
+
+op nil : -> Group .
+op __ : Group Group -> Group [assoc id: nil] .
+
+op (_;_) : Nat Nat -> Pair .
+
+op null : -> Multi .
+op _,_ : Multi Multi -> Multi [assoc id: null] .
+
+vars X Y Z T : Nat .
+vars A B : Group .
+vars M N L : Multi .
+vars P R : Pair .
+
+op convertgm : Group -> Multi .
+***(a Multime -> Multiset)
+op pop : Nat Multi -> Multi .
+
+eq pop(X , null) = (X ; 1) .
+eq pop(X , ((Y ; Z) , M)) = if (X == Y) then ((Y ; (Z + 1)) , M) else ((Y ; Z) , pop(X , M)) fi .
+
+op aux : Multi Group -> Multi .
+
+eq aux(M , nil) = M .
+eq aux(M , X A) = aux(pop(X , M) , A) .
+
+eq convertgm(nil) = null .
+eq convertgm(A) = aux(null , A) .
+
+op convertmg : Multi -> Group .
+***(b Multiset -> Multime)
+op push : Pair Nat Group -> Group .
+
+eq push((X ; Y) , Z , A) = if (Y =/= Z) then push((X ; Y) , (Z + 1) , (A X)) else A fi .
+
+eq convertmg(null) = nil .
+eq convertmg(P , M) = (push(P , 0 , nil)) convertmg(M) .
+
+op _U_ : Multi Multi -> Multi .
+***(c Reuniune)
+op poppair : Pair Multi -> Multi .
+
+eq poppair(P , null) = null .
+eq poppair((X ; Y) , ((Z ; T) , M)) = if (X == Z) then M else ((Z ; T) , poppair((X ; Y) , M)) fi .
+
+op putmax : Nat Nat Nat -> Pair .
+
+eq putmax (X , Y , T) = if (Y > T) then (X ; Y) else (X ; T) fi .
+
+op put : Pair Multi Multi -> Multi .
+
+eq put(P , null , L) = (L , P) .
+eq put((X ; Y) , ((Z ; T) , N) , L) = if (X == Z) then (L , putmax(X , Y , T)) else put((X ; Y) , N , L) fi .
+
+op aux2 : Multi Multi Multi -> Multi .
+
+eq aux2(null , M , N) = (N , M) .
+eq aux2(M , null , N) = (N , M) .
+eq aux2((P , M) , N , L) = aux2(M , poppair(P , N) , put(P , N , L)) .
+
+eq M U null = M .
+eq null U N = N .
+eq M U N = aux2(M , N , null) .
+
+op _H_ : Multi Multi -> Multi .
+***(d Intersectie)
+op putmin : Nat Nat Nat -> Pair .
+
+eq putmin (X , Y , T) = if (Y < T) then (X ; Y) else (X ; T) fi .
+
+op put2 : Pair Multi Multi -> Multi .
+
+eq put2(P , null , L) = L .
+eq put2((X ; Y) , ((Z ; T) , N) , L) = if (X == Z) then (L , putmin(X , Y , T)) else put2((X ; Y) , N , L) fi .
+
+op aux3 : Multi Multi Multi -> Multi .
+
+eq aux3(null , M , N) = N .
+eq aux3(M , null , N) = N .
+eq aux3((P , M) , N , L) = aux3(M , poppair(P , N) , put2(P , N , L)) .
+
+eq M H null = null .
+eq null H N = null .
+eq M H N = aux3(M , N , null) .
+
+endfm
