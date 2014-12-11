@@ -84,3 +84,60 @@ eq div (P1 , P2) = proc (P1 , P2 , nilP) .
 endfm
 
 red aux2 ((3.0 ; 6.0) (5.0 ; 2.0) (3.0 ; 0.0) , (1.0 ; 3.0) (2.0 ; 0.0)) .
+
+fmod POLIN2 is
+
+***( Modul pentru polinoame cu coeficienti intregi, care contine
+o operatie pentru determinarea listei tuturor radacinilor intregi
+ale unui polinom cu coeficienti intregi.)
+
+protecting INT .
+sorts Term Poli List .
+subsorts Int < Term < Poli .
+subsorts Int < List .
+
+op nil : -> Poli .
+op __ : Poli Poli -> Poli [assoc id: nil] .
+
+op (_;_) : Int Int -> Term .
+
+op null : -> List .
+op _,_ : List List -> List [assoc id: null] .
+
+vars X Y Z : Int .
+var T : Term .
+var A : Poli .
+var L : List .
+
+op free : Poli -> Int .
+eq free(nil) = 0 .
+eq free(((X ; Y) A)) = if (Y == 0) then X else free(A) fi .
+
+op isdiv : Int Int -> Int .
+ceq isdiv(X , Y) = isdiv(X , (Y + (X * (-1)))) if ((Y + (X * (-1))) > 0) .
+ceq isdiv(X , Y) = 0 if ((Y + (X * (-1))) < 0) .
+ceq isdiv(X , Y) = 1 if ((Y + (X * (-1))) == 0) .
+
+op aux : Int -> Int .
+eq aux(X) = if (X < 0) then (X * (-1)) else X fi .
+
+op div : Int Int -> List .
+eq div(0 , Y) = 0 .
+eq div(X , Y) = if (isdiv(X , Y) == 1) then ((div((X + (-1)) , Y)) , (X) , (X * (-1))) else div((X + (-1)) , Y) fi .
+
+op exp : Int Term -> Int .
+ceq exp(X , (Y ; Z)) = X * exp(X , (Y ; (Z + (-1)))) if Z > 0 .
+ceq exp(X , (Y ; Z)) = Y if (Z == 0) .
+
+op verif : Int Poli -> Int .
+eq verif(X , T) = exp(X , T) .
+eq verif(X , T A) = (exp(X , T) + verif(X , A)) .
+
+op veriflist : List Poli -> List .
+eq veriflist(null , A) = null .
+eq veriflist((X , L) , A) = if (verif(X , A) == 0) then (X , veriflist(L , A)) else veriflist(L , A) fi .
+
+op rad : Poli -> List .
+eq rad(A) = veriflist(div(aux(free(A)) , aux(free(A))) , A) .
+
+endfm
