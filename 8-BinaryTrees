@@ -1,0 +1,74 @@
+***( Operatii cu arbori binari:
+(a)- parcurgerea unui arbore binar in ordinea dreapta-radacina-stanga;
+(b)- calculul inaltimii unui arbore binar;
+(c)- calculul numarului de noduri ale unui arbore binar;
+(d)- calculul informatiei maxime din nodurile unui arbore binar;
+(e)- operatie pentru a determina daca un arbore binar are
+proprietatea ca orice nod al sau care nu e frunza are doi fii;
+(f)- operatie pentru a determina daca un arbore binar este echilibrat,
+adica orice nod al sau are diferenta dintre inaltimea subarborelui
+stang si inaltimea subarborelui drept egala cu 0, 1 sau -1. )
+
+
+fmod BT is
+
+protecting NAT .
+
+sorts List Tree .
+subsorts Nat < List .
+
+op nil : -> List .
+op __ : List List -> List [assoc id: nil] .
+
+op null : -> Tree .
+op _{_,_} : Nat Tree Tree -> Tree .
+
+var X : Nat .
+vars A B : Tree .
+
+op drs : Tree -> List .
+***(a)
+eq drs(null) = nil .
+eq drs(X{A,B}) = drs(B) X drs(A) .
+
+op h : Tree -> Nat .
+***(b)
+eq h(null) = 0 .
+eq h(X{null,null}) = 1 .
+eq h(X{A,B}) = if h(A) > h(B) then (h(A) + 1) else (h(B) + 1) fi . 
+
+op nods : Tree -> Nat .
+***(c)
+eq nods(null) = 0 .
+eq nods(X{null,null}) = 0 .
+eq nods(X{A,B}) = (1 + nods(A) + nods(B)) .
+
+op max : Tree -> Nat .
+***(d)
+eq max(X{null,null}) = X .
+eq max(X{A,null}) = if X > max(A) then X else max(A) fi .
+eq max(X{null,B}) = if X > max(B) then X else max(B) fi .
+eq max(X{A,B}) = if max(A) > max(B) then max(X{A,null}) else max(X{null,B}) fi .
+
+op complet : Tree -> Nat .
+***(e : 0 = false, 1 = true)
+eq complet(X{null,null}) = 1 .
+eq complet(X{A,null}) = 0 .
+eq complet(X{null,B}) = 0 .
+eq complet(X{A,B}) = if complet(A) == complet(B) then complet(A) else 0 fi .
+
+op echi : Tree -> Nat .
+***(f : 0 = false, 1 = true)
+eq echi(X{null,null}) = 1 .
+eq echi(X{A,null}) = if h(A) == 1 then 1 else 0 fi .
+eq echi(X{null,B}) = if h(B) == 1 then 1 else 0 fi .
+eq echi(X{A,B}) = if echi(A) == echi(B) then echi(A) else 0 fi .
+
+ops ex1 ex2 ex3 ex4 : -> Tree .
+
+eq ex1 = 1{2{null,null},3{null,4{null,null}}} .
+eq ex2 = 1{2{4{null,null},5{6{null,null},null}},3{null,7{8{null,null},9{10{null,null},null}}}} .
+eq ex3 = 1{2{null,null},3{7{null,null},4{null,null}}} .
+eq ex4 = 1{2{null,null},3{null,4{null,5{null,null}}}} .
+
+endfm
