@@ -1,0 +1,95 @@
+fmod DFA is
+
+***( Modul pentru implementarea unui automat finit
+determinist, cu starile, starea initiala, starile finale, alfabetul
+si functia de tranzitie date in interiorul modulului, care
+contine o operatie care determina daca un cuvant este sau nu
+acceptat de automat. )
+
+***( L = { a+(ba)*c+ } )
+
+protecting NAT .
+protecting STRING .
+sort List .
+subsort Char < List .
+
+op nil : -> List .
+op __ : List List -> List [assoc id: nil] .
+
+var X : Char .
+var L : List .
+
+op tranz : Nat List -> Nat .
+
+eq tranz(1 , nil) = 0 .
+eq tranz(1 , X L) = if X == "a" then tranz(2 , L) else 0 fi .
+
+eq tranz(2 , nil) = 0 .
+ceq tranz(2 , X L) = tranz(2 , L) if X == "a" .
+ceq tranz(2 , X L) = tranz(3 , L) if X == "b" .
+ceq tranz(2 , X L) = tranz(4 , L) if X == "c" .
+eq tranz(2 , X L) = 0 [owise] .
+
+eq tranz(3 , nil) = 0 .
+eq tranz(3 , X L) = if X == "a" then tranz(2 , L) else 0 fi .
+
+eq tranz(4 , nil) = 1 .
+eq tranz(4 , X L) = if X == "c" then tranz(4 , L) else 0 fi .
+
+op aut : List -> Nat .
+
+eq aut(L) = tranz(1 , L) .
+
+endfm
+
+fmod NFA is
+
+***> La fel ca in DFA, dar pentru un automat finit nedeterminist.
+***( L = { ab(aab)*c+ }U{ a(baa)*bd(ad)*a }U{ a(baa)* } )
+
+protecting NAT .
+protecting STRING .
+sort List Rez.
+subsort Char < List .
+subsort Nat < Rez .
+
+op nil : -> List .
+op __ : List List -> List [assoc id: nil] .
+
+op null : -> Rez .
+op _,_ : Rez Rez -> Rez [assoc id: null] .
+
+var X : Char .
+var L : List .
+var A : Nat .
+var T : Rez .
+
+op tranz : Nat List -> Rez .
+
+eq tranz(1 , nil) = 0 .
+eq tranz(1 , X L) = if X == "a" then tranz(2 , L) else 0 fi .
+
+eq tranz(2 , nil) = 1 .
+eq tranz(2 , X L) = if X == "b" then (tranz(3 , L) , tranz(4 , L)) else 0 fi .
+
+eq tranz(4 , nil) = 0 .
+ceq tranz(4 , X L) = tranz(1 , L) if X == "a" .
+ceq tranz(4 , X L) = (tranz(4 , L) , tranz(5 , L)) if X == "c" .
+eq tranz(4 , X L) = 0 [owise] .
+
+eq tranz(5 , L) = if L == nil then 1 else 0 fi . 
+
+eq tranz(3 , nil) = 0 .
+eq tranz(3 , X L) = if X == "d" then tranz(6 , L) else 0 fi .
+
+eq tranz(6 , nil) = 0 .
+eq tranz(6 , X L) = if X == "a" then (tranz(3 , L) , tranz(5 , L)) else 0 fi .
+
+op src : Rez -> Nat .
+eq src(null) = 0 .
+eq src(A , T) = if (A == 1) then 1 else src(T) fi . 
+
+op aut : List -> Nat .
+eq aut(L) = src(tranz(1 , L)) .
+
+endfm
